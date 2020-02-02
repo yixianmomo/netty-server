@@ -1,7 +1,7 @@
 package com.yixianbinbin.netty;
 
 import com.yixianbinbin.netty.entitys.MessageBean;
-import com.yixianbinbin.netty.entitys.ReceiveMessageImpl;
+import com.yixianbinbin.netty.messages.ReceiveMessageImpl;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;

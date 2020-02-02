@@ -1,4 +1,4 @@
-package com.yixianbinbin.netty.entitys;
+package com.yixianbinbin.netty.messages;
 
 import com.yixianbinbin.netty.myutils.CUtil;
 
