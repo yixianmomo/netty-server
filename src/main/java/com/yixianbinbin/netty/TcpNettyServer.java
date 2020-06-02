@@ -1,6 +1,7 @@
 package com.yixianbinbin.netty;
 
 import com.yixianbinbin.netty.mapper.TestMapper;
+import com.yixianbinbin.netty.myutils.DBUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -72,16 +73,7 @@ public class TcpNettyServer {
 
     public static void main(String[] args) {
 
-        try {
-            InputStream resourceStream = Resources.getResourceAsStream("mybatis-config.xml");
-            SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(resourceStream);
-            SqlSession session = factory.openSession();
-            TestMapper test = session.getMapper(TestMapper.class);
-            HashMap<String, Object> info = test.selectTest("admin");
-            System.out.println(info);
-        }catch (IOException ioe){
 
-        }
 
         TcpNettyServer tcpNettyServer = new TcpNettyServer();
         tcpNettyServer.start();

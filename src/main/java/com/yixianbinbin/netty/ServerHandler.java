@@ -3,9 +3,12 @@ package com.yixianbinbin.netty;
 
 import com.yixianbinbin.netty.entitys.MessageBean;
 import com.yixianbinbin.netty.myutils.CUtil;
+import com.yixianbinbin.netty.myutils.DBUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleStateEvent;
+
+import java.util.HashMap;
 
 
 /**
@@ -34,13 +37,14 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("有连接激活关闭");
+        HashMap<String,Object> test = DBUtil.getInstance().selectTest("admin");
+        System.out.println(test);
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         System.out.println("有消息到达");
-//        MessageBean in = (MessageBean) msg;
-//        System.out.println("in:"+ in.getMsgBody());
+
     }
 
     @Override
