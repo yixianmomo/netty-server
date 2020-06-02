@@ -33,6 +33,7 @@ public class MyCustomMessageDecoder extends ByteToMessageDecoder {
             byteBuf.resetReaderIndex();
             return;
         }
+        System.out.println("msg len:" + dataLength);
         // read
         byte[] packBytes = new byte[dataLength];
         byteBuf.readBytes(packBytes);

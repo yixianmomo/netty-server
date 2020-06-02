@@ -39,8 +39,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         System.out.println("有消息到达");
-        MessageBean in = (MessageBean) msg;
-        System.out.println("in:"+ in.getMsgBody());
+//        MessageBean in = (MessageBean) msg;
+//        System.out.println("in:"+ in.getMsgBody());
     }
 
     @Override

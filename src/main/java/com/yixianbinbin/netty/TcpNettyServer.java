@@ -1,5 +1,6 @@
 package com.yixianbinbin.netty;
 
+import com.yixianbinbin.netty.mapper.TestMapper;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -11,7 +12,14 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -42,6 +50,7 @@ public class TcpNettyServer {
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             socketChannel.pipeline().addLast(new IdleStateHandler(10, 10, 0, TimeUnit.SECONDS));
                             socketChannel.pipeline().addLast(new MyCustomMessageDecoder());
+//                            socketChannel.pipeline().addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE,0,4,0,4));
                             socketChannel.pipeline().addLast(new ServerHandler());
 
                         }
@@ -62,7 +71,20 @@ public class TcpNettyServer {
     }
 
     public static void main(String[] args) {
+
+        try {
+            InputStream resourceStream = Resources.getResourceAsStream("mybatis-config.xml");
+            SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(resourceStream);
+            SqlSession session = factory.openSession();
+            TestMapper test = session.getMapper(TestMapper.class);
+            HashMap<String, Object> info = test.selectTest("admin");
+            System.out.println(info);
+        }catch (IOException ioe){
+
+        }
+
         TcpNettyServer tcpNettyServer = new TcpNettyServer();
         tcpNettyServer.start();
+
     }
 }
