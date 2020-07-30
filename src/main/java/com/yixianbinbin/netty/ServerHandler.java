@@ -1,7 +1,8 @@
 package com.yixianbinbin.netty;
 
 
-import com.yixianbinbin.netty.entitys.MessageBean;
+import com.yixianbinbin.netty.messages.ReceiveMessage;
+import com.yixianbinbin.netty.messages.SendMessage;
 import com.yixianbinbin.netty.myutils.CUtil;
 import com.yixianbinbin.netty.myutils.DBUtil;
 import io.netty.channel.ChannelHandlerContext;
@@ -43,8 +44,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        System.out.println("有消息到达");
-
+        ReceiveMessage receiveMessage = (ReceiveMessage) msg;
+        System.out.println("有消息到达=" + receiveMessage.getMsgBody());
+        // send
+        SendMessage sendMessage = new SendMessage(1,"nihao");
+        ctx.writeAndFlush(sendMessage);
     }
 
     @Override

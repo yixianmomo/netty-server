@@ -1,7 +1,7 @@
 package com.yixianbinbin.netty;
 
-import com.yixianbinbin.netty.mapper.TestMapper;
-import com.yixianbinbin.netty.myutils.DBUtil;
+import com.yixianbinbin.netty.messages.MyCustomMessageDecoder;
+import com.yixianbinbin.netty.messages.MyCustomMessageEncoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -13,14 +13,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
-import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -50,7 +43,8 @@ public class TcpNettyServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             socketChannel.pipeline().addLast(new IdleStateHandler(10, 10, 0, TimeUnit.SECONDS));
-                            socketChannel.pipeline().addLast(new MyCustomMessageDecoder());
+                            socketChannel.pipeline().addLast("decoder",new MyCustomMessageDecoder());
+                            socketChannel.pipeline().addLast("encoder",new MyCustomMessageEncoder());
 //                            socketChannel.pipeline().addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE,0,4,0,4));
                             socketChannel.pipeline().addLast(new ServerHandler());
 
