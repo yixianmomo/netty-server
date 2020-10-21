@@ -33,13 +33,13 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("有连接激活成功");
+        HashMap<String,Object> test = DBUtil.getInstance().selectTest("admin");
+        System.out.println(test);
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("有连接激活关闭");
-        HashMap<String,Object> test = DBUtil.getInstance().selectTest("admin");
-        System.out.println(test);
     }
 
     @Override
