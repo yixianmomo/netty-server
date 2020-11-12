@@ -8,7 +8,7 @@ import io.netty.handler.codec.MessageToByteEncoder;
  * Author:Caoyixian
  * Created by Administrator on 2020/7/30.
  */
-public class MyCustomMessageEncoder extends MessageToByteEncoder<SendMessage> {
+public class SendMessageEncoder extends MessageToByteEncoder<SendMessage> {
 
 
     @Override

@@ -1,6 +1,6 @@
 package com.yixianbinbin.netty.messages;
 
-import com.yixianbinbin.netty.myutils.CUtil;
+import com.yixianbinbin.netty.myutils.ConvertUtil;
 
 import java.io.Serializable;
 
@@ -24,7 +24,7 @@ public class ReceiveMessage implements Serializable {
         if (packageBateArr.length > msgTypeLen) {
             System.arraycopy(this.packageBateArr, 0, msgTypeBytes, 0, msgTypeBytes.length);
         }
-        return CUtil.byteArrayToInt(msgTypeBytes);
+        return ConvertUtil.byteArrayToInt(msgTypeBytes);
     }
 
 

@@ -1,6 +1,5 @@
 package com.yixianbinbin.netty.messages;
 
-import com.yixianbinbin.netty.entitys.MessageBean;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -11,7 +10,7 @@ import java.util.List;
  * Author:Caoyixian
  * Created by Administrator on 2019/12/23.
  */
-public class MyCustomMessageDecoder extends ByteToMessageDecoder {
+public class ReceiveMessageDecoder extends ByteToMessageDecoder {
 
     private final static int HEAD_LENGTH = 4;
 
@@ -32,15 +31,11 @@ public class MyCustomMessageDecoder extends ByteToMessageDecoder {
             byteBuf.resetReaderIndex();
             return;
         }
-        System.out.println("msg len:" + dataLength);
         // read
         byte[] packBytes = new byte[dataLength];
         byteBuf.readBytes(packBytes);
         // 将byte转化为我们需要的对象
         ReceiveMessage receiveMessage = new ReceiveMessage(packBytes);
-//        MessageBean messageBean = new MessageBean();
-//        messageBean.setMsgBody(receiveMessage.getMsgBody());
-//        messageBean.setMsgType(receiveMessage.getMsgType());
         list.add(receiveMessage);
     }
 

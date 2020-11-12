@@ -7,7 +7,7 @@ import java.time.ZoneOffset;
  * Author:Caoyixian
  * Created by Administrator on 2019/12/23.
  */
-public class CUtil {
+public class ConvertUtil {
 
 
     public static byte[] intToByteArray(int i) {

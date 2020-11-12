@@ -1,15 +1,11 @@
 package com.yixianbinbin.netty;
 
-
 import com.yixianbinbin.netty.messages.ReceiveMessage;
 import com.yixianbinbin.netty.messages.SendMessage;
-import com.yixianbinbin.netty.myutils.CUtil;
-import com.yixianbinbin.netty.myutils.DBUtil;
+import com.yixianbinbin.netty.myutils.ConvertUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleStateEvent;
-
-import java.util.HashMap;
 
 
 /**
@@ -18,7 +14,7 @@ import java.util.HashMap;
  */
 public class ServerHandler extends ChannelInboundHandlerAdapter {
     private int readIdleTimes = 0;
-    private long lastHeartBeatTimestamp = CUtil.getCurrTimestamp();
+    private long lastHeartBeatTimestamp = ConvertUtil.getCurrTimestamp();
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
@@ -33,8 +29,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("有连接激活成功");
-        HashMap<String,Object> test = DBUtil.getInstance().selectTest("admin");
-        System.out.println(test);
     }
 
     @Override
@@ -54,7 +48,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         System.out.println("有消息到达完成");
-        lastHeartBeatTimestamp = CUtil.getCurrTimestamp();
+        lastHeartBeatTimestamp = ConvertUtil.getCurrTimestamp();
     }
 
     @Override
@@ -65,7 +59,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             switch (event.state()){
                 case READER_IDLE:
                     System.out.println("读空闲事件:" + readIdleTimes);
-                    if(CUtil.getCurrTimestamp() - lastHeartBeatTimestamp > 60) {
+                    if(ConvertUtil.getCurrTimestamp() - lastHeartBeatTimestamp > 60) {
                         readIdleTimes++;
                     }
                     break;

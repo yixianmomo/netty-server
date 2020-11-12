@@ -1,7 +1,7 @@
 package com.yixianbinbin.netty;
 
-import com.yixianbinbin.netty.messages.MyCustomMessageDecoder;
-import com.yixianbinbin.netty.messages.MyCustomMessageEncoder;
+import com.yixianbinbin.netty.messages.ReceiveMessageDecoder;
+import com.yixianbinbin.netty.messages.SendMessageEncoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -43,8 +43,8 @@ public class TcpNettyServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             socketChannel.pipeline().addLast(new IdleStateHandler(10, 10, 0, TimeUnit.SECONDS));
-                            socketChannel.pipeline().addLast("decoder",new MyCustomMessageDecoder());
-                            socketChannel.pipeline().addLast("encoder",new MyCustomMessageEncoder());
+                            socketChannel.pipeline().addLast("decoder",new ReceiveMessageDecoder());
+                            socketChannel.pipeline().addLast("encoder",new SendMessageEncoder());
 //                            socketChannel.pipeline().addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE,0,4,0,4));
                             socketChannel.pipeline().addLast(new ServerHandler());
 
@@ -66,8 +66,6 @@ public class TcpNettyServer {
     }
 
     public static void main(String[] args) {
-
-
 
         TcpNettyServer tcpNettyServer = new TcpNettyServer();
         tcpNettyServer.start();

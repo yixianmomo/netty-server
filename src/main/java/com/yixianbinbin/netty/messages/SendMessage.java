@@ -1,8 +1,7 @@
 package com.yixianbinbin.netty.messages;
 
-import com.yixianbinbin.netty.myutils.CUtil;
+import com.yixianbinbin.netty.myutils.ConvertUtil;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
@@ -44,7 +43,7 @@ public class SendMessage implements Serializable {
     public byte[] getPackageBytes(){
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            baos.write(CUtil.intToByteArray(this.type));
+            baos.write(ConvertUtil.intToByteArray(this.type));
             baos.write(content.getBytes("UTF-8"));
             return baos.toByteArray();
         }catch (IOException e){
