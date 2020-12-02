@@ -1,6 +1,8 @@
 package com.yixianbinbin.netty;
 
+import com.yixianbinbin.netty.entity.Place;
 import com.yixianbinbin.netty.messages.*;
+import com.yixianbinbin.netty.myutils.DBUtil;
 import com.yixianbinbin.netty.user.*;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -21,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ServerHandler extends ChannelInboundHandlerAdapter {
     private static final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
     private UserFactory userFactory = UserFactory.getInstance();
+    private DBUtil dbUtil = DBUtil.getInstance();
     private AtomicInteger webSocketId = new AtomicInteger(0);
 
 
@@ -58,8 +61,14 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             // 场所登录
             user.setTerminal(TerminalType.PLACE_TERMINAL.getName());
             String placeKey = new String(receiveMessage.getMsgBody(), "UTF-8");
+            Place placeInfo = dbUtil.getPlaceInfo(placeKey);
+            if(null == placeInfo){
+                logger.info("登录错误：placeKey={}不存在,准备关闭",placeKey);
+                ctx.close();
+                return;
+            }
             // 查询数据库得到placeId ...
-            user.setUser(new ClientUser(6, placeKey));
+            user.setUser(new ClientUser(placeInfo.getPlaceID(), placeKey));
         } else if (EventType.PLACE_HEARTBEAT.getId() == receiveMessage.getMsgType()) {
             user.setLastHeartbeat(new Date());
         } else if (EventType.PLACE_DATA.getId() == receiveMessage.getMsgType()) {
