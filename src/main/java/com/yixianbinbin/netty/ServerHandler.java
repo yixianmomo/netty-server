@@ -62,8 +62,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             user.setTerminal(TerminalType.PLACE_TERMINAL.getName());
             String placeKey = new String(receiveMessage.getMsgBody(), "UTF-8");
             Place placeInfo = dbUtil.getPlaceInfo(placeKey);
-            if(null == placeInfo){
-                logger.info("登录错误：placeKey={}不存在,准备关闭",placeKey);
+            if (null == placeInfo) {
+                logger.info("场所端登录错误：placeKey={}不存在,准备关闭", placeKey);
                 ctx.close();
                 return;
             }
@@ -76,6 +76,13 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             placeClient.setPlaceId(user.getUser().getPlaceId());
             new Thread(new ResponseQueueThread(userFactory, placeClient)).start();
         } else if (EventType.WEB_LOGIN.getId() == receiveMessage.getMsgType()) {
+            String localLoginKey = "acd1a3bf1uc7hhecdfbadcbe7cdhk3xj";
+            String loginKey = new String(receiveMessage.getMsgBody(), "UTF-8");
+            if (!localLoginKey.equals(loginKey)) {
+                logger.info("Web端登录错误：loginKey={}不存在,准备关闭", loginKey);
+                ctx.close();
+                return;
+            }
             user.setTerminal(TerminalType.WEBAPI_TERMINAL.getName());
         } else if (EventType.WEB_HEARTBEAT.getId() == receiveMessage.getMsgType()) {
             user.setLastHeartbeat(new Date());
