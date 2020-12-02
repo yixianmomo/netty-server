@@ -14,7 +14,6 @@ public class SendMessageEncoder extends MessageToByteEncoder<SendMessage> {
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, SendMessage sendMessage, ByteBuf byteBuf) throws Exception {
          byte[] packBytes = sendMessage.getPackageBytes();
-         byteBuf.writeInt(packBytes.length);
          byteBuf.writeBytes(packBytes);
     }
 }

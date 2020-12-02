@@ -1,6 +1,6 @@
 package com.yixianbinbin.netty.messages;
 
-import com.yixianbinbin.netty.myutils.ConvertUtil;
+import com.yixianbinbin.netty.myutils.SocketUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -13,12 +13,12 @@ import java.io.Serializable;
 public class SendMessage implements Serializable {
 
     private int type;
-    private String content;
+    private byte[] content;
 
     public SendMessage() {
     }
 
-    public SendMessage(int type, String content) {
+    public SendMessage(int type, byte[] content) {
         this.type = type;
         this.content = content;
     }
@@ -32,19 +32,22 @@ public class SendMessage implements Serializable {
         this.type = type;
     }
 
-    public String getContent() {
+    public byte[] getContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    public void setContent(byte[] content) {
         this.content = content;
     }
 
     public byte[] getPackageBytes(){
         try {
+            int fullLen = 4 + content.length;
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            baos.write(ConvertUtil.intToByteArray(this.type));
-            baos.write(content.getBytes("UTF-8"));
+            baos.write(SocketUtil.int2Bytes(fullLen));
+            baos.write(SocketUtil.int2Bytes(type));
+            baos.write(content);
+            baos.close();
             return baos.toByteArray();
         }catch (IOException e){
             throw new RuntimeException("IO异常");

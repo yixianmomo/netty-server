@@ -1,6 +1,6 @@
 package com.yixianbinbin.netty.messages;
 
-import com.yixianbinbin.netty.myutils.ConvertUtil;
+import com.yixianbinbin.netty.myutils.SocketUtil;
 
 import java.io.Serializable;
 
@@ -24,22 +24,16 @@ public class ReceiveMessage implements Serializable {
         if (packageBateArr.length > msgTypeLen) {
             System.arraycopy(this.packageBateArr, 0, msgTypeBytes, 0, msgTypeBytes.length);
         }
-        return ConvertUtil.byteArrayToInt(msgTypeBytes);
+        return SocketUtil.bytes2Int(msgTypeBytes);
     }
 
 
-
-    public String getMsgBody() {
-        try {
-            byte[] msgBodyBytes = new byte[this.packageBateArr.length - msgTypeLen];
-            if (packageBateArr.length > msgTypeLen) {
-                System.arraycopy(this.packageBateArr, msgTypeLen, msgBodyBytes, 0, msgBodyBytes.length);
-            }
-            return new String(msgBodyBytes, "UTF-8");
-        } catch (Exception e) {
-            e.printStackTrace();
+    public byte[] getMsgBody() {
+        byte[] msgBodyBytes = new byte[this.packageBateArr.length - msgTypeLen];
+        if (packageBateArr.length > msgTypeLen) {
+            System.arraycopy(this.packageBateArr, msgTypeLen, msgBodyBytes, 0, msgBodyBytes.length);
         }
-        return null;
+        return msgBodyBytes;
     }
 
 
