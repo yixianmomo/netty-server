@@ -24,14 +24,20 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     private static final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
     private UserFactory userFactory = UserFactory.getInstance();
     private DBUtil dbUtil = DBUtil.getInstance();
-    private AtomicInteger webSocketId = new AtomicInteger(0);
+    private static int socketId = 0;
+
+    public synchronized int getAndAddSocketId()
+    {
+        socketId++;
+        return socketId;
+    }
 
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
 //        System.out.println("有连接注册成功");
         UserWrap<ClientUser> user = new UserWrap<ClientUser>(ctx);
-        user.setSocketId(webSocketId.addAndGet(1));
+        user.setSocketId(getAndAddSocketId());
         user.setLastHeartbeat(new Date());
         userFactory.addUser(user);
     }
