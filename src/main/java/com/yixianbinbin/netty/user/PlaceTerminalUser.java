@@ -5,15 +5,15 @@ import java.io.Serializable;
 /**
  * Created by Administrator on 2020/11/26.
  */
-public class ClientUser implements Serializable {
+public class PlaceTerminalUser implements Serializable {
 
     private Integer placeId = 0;
     private String placeKey;
 
-    public ClientUser() {
+    public PlaceTerminalUser() {
     }
 
-    public ClientUser(Integer placeId, String placeKey) {
+    public PlaceTerminalUser(Integer placeId, String placeKey) {
         this.placeId = placeId;
         this.placeKey = placeKey;
     }

@@ -2,10 +2,8 @@ package com.yixianbinbin.netty.user;
 
 import io.netty.channel.ChannelHandlerContext;
 
-import java.net.Socket;
 import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by Administrator on 2020/10/30.
@@ -15,8 +13,6 @@ public class UserFactory {
     private static UserFactory userFactoryInstance = null;
     private int userSize = 0;
     private CopyOnWriteArraySet<SocketUser> users = new CopyOnWriteArraySet<>();
-    private ReentrantLock addlock = new ReentrantLock();
-    private ReentrantLock removelock = new ReentrantLock();
 
     private UserFactory() {
     }
@@ -32,70 +28,86 @@ public class UserFactory {
         return userFactoryInstance;
     }
 
-    public boolean addUser(SocketUser user) {
-        addlock.lock();
-        try {
-            boolean check = false;
-            Iterator<SocketUser> iter = users.iterator();
-            SocketUser item = null;
-            while (iter.hasNext()) {
-                item = iter.next();
-                if (item.getSocket().equals(user.getSocket())) {
-                    check = true;
-                    break;
-                }
-            }
-            if (!check) {
-                users.add(user);
-                userSize++;
-                return true;
-            }
-        } catch (Exception e) {
-
-        } finally {
-            addlock.unlock();
-        }
-        return false;
-    }
-
-
-    public boolean removeUser(ChannelHandlerContext ctx) {
-        removelock.lock();
-        try {
-            Iterator<SocketUser> iter = users.iterator();
-            SocketUser item = null;
-            while (iter.hasNext()) {
-                item = iter.next();
-                if (ctx.equals(item.getSocket())) {
-                    users.remove(item);
-                    userSize--;
-                    return true;
-                }
-            }
-        } catch (Exception e) {
-
-        } finally {
-            removelock.unlock();
-        }
-        return false;
-    }
-
-
-    public synchronized ChannelHandlerContext findPlaceSocket(int placeId) {
+    public synchronized boolean addUser(SocketUser user) {
+        boolean check = false;
         Iterator<SocketUser> iter = users.iterator();
         SocketUser item = null;
         while (iter.hasNext()) {
             item = iter.next();
-            if (TerminalType.PLACE_TERMINAL.getName().equals(item.getTerminal())) {
-                ClientUser user = (ClientUser) item.getUser();
+            if (item.getSocket().equals(user.getSocket())) {
+                check = true;
+                break;
+            }
+        }
+        if (!check) {
+            users.add(user);
+            userSize++;
+            return true;
+        }
+        return false;
+    }
+
+
+    public synchronized boolean removeUser(ChannelHandlerContext ctx) {
+        Iterator<SocketUser> iter = users.iterator();
+        SocketUser item = null;
+        while (iter.hasNext()) {
+            item = iter.next();
+            if (ctx.equals(item.getSocket())) {
+                users.remove(item);
+                userSize--;
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public synchronized UserWrap findPlaceFreeSocket(int placeId) {
+        int i = 0;
+        UserWrap placeUser;
+        while (i < 3) {
+            placeUser = __findPlaceFreeSocket(placeId);
+            if (null != placeUser) {
+                placeUser.setBusy(true);
+                return placeUser;
+            }
+            wait(2);
+            i++;
+        }
+        return null;
+    }
+
+    private void wait(int seconds) {
+        try {
+            Thread.sleep(1000 * seconds);
+        } catch (InterruptedException e) {
+
+        }
+    }
+
+
+    private UserWrap __findPlaceFreeSocket(int placeId) {
+        Iterator<SocketUser> iter = users.iterator();
+        UserWrap item = null;
+        while (iter.hasNext()) {
+            item = (UserWrap) iter.next();
+            if (TerminalType.PLACE_TERMINAL.getName().equals(item.getTerminal()) && !item.isBusy()) {
+                PlaceTerminalUser user = (PlaceTerminalUser) item.getUser();
                 if (placeId == user.getPlaceId()) {
-                    return item.getSocket();
+                    return item;
                 }
             }
         }
         return null;
     }
 
+
+    public synchronized void releasePlaceSocket(UserWrap userWrap) {
+        if(null != userWrap) {
+            userWrap.setBusy(false);
+        }
+    }
 
 
     public synchronized ChannelHandlerContext findWebSocket(int webSocketId) {
@@ -113,13 +125,12 @@ public class UserFactory {
     }
 
 
-
     public synchronized SocketUser getUser(ChannelHandlerContext ctx) {
         Iterator<SocketUser> iter = users.iterator();
         SocketUser item = null;
         while (iter.hasNext()) {
             item = iter.next();
-            if(ctx.equals(item.getSocket())){
+            if (ctx.equals(item.getSocket())) {
                 return item;
             }
         }

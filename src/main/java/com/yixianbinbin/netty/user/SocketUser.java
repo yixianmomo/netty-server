@@ -8,17 +8,18 @@ import java.util.Date;
 /**
  * Created by Administrator on 2020/10/30.
  */
-public interface SocketUser<T> {
+public interface SocketUser {
 
     ChannelHandlerContext getSocket();
 
+    boolean isBusy();
+
     String getTerminal();
 
-    Integer getSocketId();
+    int getSocketId();
 
     Date getLastHeartbeat();
 
-    T getUser();
-
+    Object getUser();
 
 }

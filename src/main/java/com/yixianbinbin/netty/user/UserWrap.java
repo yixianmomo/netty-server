@@ -9,13 +9,14 @@ import java.util.Date;
 /**
  * Created by Administrator on 2020/10/30.
  */
-public class UserWrap<T> implements SocketUser<T>,Serializable {
+public class UserWrap implements SocketUser, Serializable {
 
     private ChannelHandlerContext socket = null;
     private Date lastHeartbeat = null;
     private String terminal;
-    private Integer socketId;
-    private T user = null;
+    private int socketId;
+    private boolean isBusy;
+    private Object user = null;
 
     public UserWrap(ChannelHandlerContext socket) {
         this.socket = socket;
@@ -37,8 +38,18 @@ public class UserWrap<T> implements SocketUser<T>,Serializable {
         this.terminal = terminal;
     }
 
-    public void setSocketId(Integer socketId) {
+    public void setSocketId(int socketId) {
         this.socketId = socketId;
+    }
+
+
+    @Override
+    public boolean isBusy() {
+        return isBusy;
+    }
+
+    public void setBusy(boolean busy) {
+        isBusy = busy;
     }
 
     public void setSocket(ChannelHandlerContext socket) {
@@ -46,11 +57,11 @@ public class UserWrap<T> implements SocketUser<T>,Serializable {
     }
 
     @Override
-    public T getUser() {
+    public Object getUser() {
         return user;
     }
 
-    public void setUser(T user) {
+    public void setUser(Object user) {
         this.user = user;
     }
 
@@ -74,7 +85,10 @@ public class UserWrap<T> implements SocketUser<T>,Serializable {
     }
 
     @Override
-    public Integer getSocketId() {
+    public int getSocketId() {
         return socketId;
     }
+
+
+
 }

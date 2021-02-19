@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -26,8 +25,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     private DBUtil dbUtil = DBUtil.getInstance();
     private static int socketId = 0;
 
-    public synchronized int getAndAddSocketId()
-    {
+    public synchronized int incrementSocketId() {
         socketId++;
         return socketId;
     }
@@ -35,9 +33,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-//        System.out.println("有连接注册成功");
-        UserWrap<ClientUser> user = new UserWrap<ClientUser>(ctx);
-        user.setSocketId(getAndAddSocketId());
+        UserWrap user = new UserWrap(ctx);
+        user.setSocketId(incrementSocketId());
         user.setLastHeartbeat(new Date());
         userFactory.addUser(user);
     }
@@ -62,10 +59,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ReceiveMessage receiveMessage = (ReceiveMessage) msg;
 //        logger.info("type={},bodyLen={}", receiveMessage.getMsgType(), receiveMessage.getMsgBody().length);
-        UserWrap<ClientUser> user = (UserWrap<ClientUser>) userFactory.getUser(ctx);
+        UserWrap user = (UserWrap) userFactory.getUser(ctx);
         if (EventType.PLACE_LOGIN.getId() == receiveMessage.getMsgType()) {
             // 场所登录
-            user.setTerminal(TerminalType.PLACE_TERMINAL.getName());
             String placeKey = new String(receiveMessage.getMsgBody(), "UTF-8");
             Place placeInfo = dbUtil.getPlaceInfo(placeKey);
             if (null == placeInfo) {
@@ -74,12 +70,15 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 return;
             }
             // 查询数据库得到placeId ...
-            user.setUser(new ClientUser(placeInfo.getPlaceID(), placeKey));
+            user.setUser(new PlaceTerminalUser(placeInfo.getPlaceID(), placeKey));
+            user.setTerminal(TerminalType.PLACE_TERMINAL.getName());
+            user.setBusy(false);
         } else if (EventType.PLACE_HEARTBEAT.getId() == receiveMessage.getMsgType()) {
             user.setLastHeartbeat(new Date());
         } else if (EventType.PLACE_DATA.getId() == receiveMessage.getMsgType()) {
+            PlaceTerminalUser varUser = (PlaceTerminalUser) user.getUser();
             PlaceClientRequestBean placeClient = new PlaceClientRequestBean(receiveMessage.getMsgBody());
-            placeClient.setPlaceId(user.getUser().getPlaceId());
+            placeClient.setPlaceId(varUser.getPlaceId());
             new Thread(new ResponseQueueThread(userFactory, placeClient)).start();
         } else if (EventType.WEB_LOGIN.getId() == receiveMessage.getMsgType()) {
             String localLoginKey = "acd1a3bf1uc7hhecdfbadcbe7cdhk3xj";
@@ -109,7 +108,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         // 心跳包处理
         boolean checkTimeout = false;
-        UserWrap<ClientUser> user = (UserWrap<ClientUser>) userFactory.getUser(ctx);
+        UserWrap user = (UserWrap) userFactory.getUser(ctx);
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent event = (IdleStateEvent) evt;
             switch (event.state()) {
