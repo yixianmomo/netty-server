@@ -40,18 +40,14 @@ public class SendMessage implements Serializable {
         this.content = content;
     }
 
-    public byte[] getPackageBytes(){
-        try {
-            int fullLen = 4 + content.length;
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            baos.write(SocketUtil.int2Bytes(fullLen));
-            baos.write(SocketUtil.int2Bytes(type));
-            baos.write(content);
-            baos.close();
-            return baos.toByteArray();
-        }catch (IOException e){
-            throw new RuntimeException("IO异常");
-        }
+    public byte[] getPackageBytes() throws Exception {
+        int fullLen = 4 + content.length;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        baos.write(SocketUtil.int2Bytes(fullLen));
+        baos.write(SocketUtil.int2Bytes(type));
+        baos.write(content);
+        baos.close();
+        return baos.toByteArray();
     }
 
 

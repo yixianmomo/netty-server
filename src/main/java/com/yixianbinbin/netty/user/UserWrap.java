@@ -57,11 +57,11 @@ public class UserWrap implements SocketUser, Serializable {
     }
 
     @Override
-    public Object getUser() {
+    public Object getUserDetail() {
         return user;
     }
 
-    public void setUser(Object user) {
+    public void setUserDetail(Object user) {
         this.user = user;
     }
 

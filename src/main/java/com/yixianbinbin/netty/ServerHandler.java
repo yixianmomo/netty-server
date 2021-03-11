@@ -70,13 +70,18 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 return;
             }
             // 查询数据库得到placeId ...
-            user.setUser(new PlaceTerminalUser(placeInfo.getPlaceID(), placeKey));
+            user.setUserDetail(new PlaceTerminalUserDetail(placeInfo.getPlaceID(), placeKey,placeInfo.getPlaceName()));
             user.setTerminal(TerminalType.PLACE_TERMINAL.getName());
             user.setBusy(false);
         } else if (EventType.PLACE_HEARTBEAT.getId() == receiveMessage.getMsgType()) {
             user.setLastHeartbeat(new Date());
         } else if (EventType.PLACE_DATA.getId() == receiveMessage.getMsgType()) {
-            PlaceTerminalUser varUser = (PlaceTerminalUser) user.getUser();
+            if(null == user.getUserDetail()){
+                logger.info("场所端错误：为完成登录初始化");
+                ctx.close();
+                return;
+            }
+            PlaceTerminalUserDetail varUser = (PlaceTerminalUserDetail) user.getUserDetail();
             PlaceClientRequestBean placeClient = new PlaceClientRequestBean(receiveMessage.getMsgBody());
             placeClient.setPlaceId(varUser.getPlaceId());
             new Thread(new ResponseQueueThread(userFactory, placeClient)).start();

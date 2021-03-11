@@ -93,7 +93,7 @@ public class UserFactory {
         while (iter.hasNext()) {
             item = (UserWrap) iter.next();
             if (TerminalType.PLACE_TERMINAL.getName().equals(item.getTerminal()) && !item.isBusy()) {
-                PlaceTerminalUser user = (PlaceTerminalUser) item.getUser();
+                PlaceTerminalUserDetail user = (PlaceTerminalUserDetail) item.getUserDetail();
                 if (placeId == user.getPlaceId()) {
                     return item;
                 }

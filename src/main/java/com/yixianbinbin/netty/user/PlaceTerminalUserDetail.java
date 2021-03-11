@@ -5,18 +5,22 @@ import java.io.Serializable;
 /**
  * Created by Administrator on 2020/11/26.
  */
-public class PlaceTerminalUser implements Serializable {
+public class PlaceTerminalUserDetail implements Serializable {
 
     private Integer placeId = 0;
     private String placeKey;
+    private String placeName;
 
-    public PlaceTerminalUser() {
+    public PlaceTerminalUserDetail() {
     }
 
-    public PlaceTerminalUser(Integer placeId, String placeKey) {
+    public PlaceTerminalUserDetail(Integer placeId, String placeKey,String placeName) {
         this.placeId = placeId;
         this.placeKey = placeKey;
+        this.placeName = placeName;
     }
+
+
 
     public Integer getPlaceId() {
         return placeId;
@@ -32,5 +36,13 @@ public class PlaceTerminalUser implements Serializable {
 
     public void setPlaceKey(String placeKey) {
         this.placeKey = placeKey;
+    }
+
+    public String getPlaceName() {
+        return placeName;
+    }
+
+    public void setPlaceName(String placeName) {
+        this.placeName = placeName;
     }
 }

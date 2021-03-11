@@ -20,6 +20,6 @@ public interface SocketUser {
 
     Date getLastHeartbeat();
 
-    Object getUser();
+    Object getUserDetail();
 
 }
