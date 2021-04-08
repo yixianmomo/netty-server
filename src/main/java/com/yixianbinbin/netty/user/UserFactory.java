@@ -72,7 +72,7 @@ public class UserFactory {
                 placeUser.setBusy(true);
                 return placeUser;
             }
-            wait(2);
+            wait(1);
             i++;
         }
         return null;
