@@ -10,6 +10,7 @@ import io.netty.handler.timeout.IdleStateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
@@ -33,10 +34,14 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
+        String ip = insocket.getAddress().getHostAddress();
         UserWrap user = new UserWrap(ctx);
         user.setSocketId(incrementSocketId());
         user.setLastHeartbeat(new Date());
+        user.setIp(ip);
         userFactory.addUser(user);
+        logger.info("新用户激活：ip={},socketId={}",user.getIp(),user.getSocketId());
     }
 
     @Override
@@ -101,6 +106,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             webClient.setWebSocketId(user.getSocketId());
             webClient.setWebSocket(ctx);
             new Thread(new RequestQueueThread(userFactory, webClient)).start();
+        }else if(EventType.WEB_GET_REMOTEIP.getId() == receiveMessage.getMsgType()){
+            WebClientRequestBean webClient = new WebClientRequestBean(receiveMessage.getMsgBody());
+            webClient.setWebSocketId(user.getSocketId());
+            webClient.setWebSocket(ctx);
+            new Thread(new RequestRemoteIPThread(userFactory, webClient)).start();
         }
     }
 

@@ -14,6 +14,7 @@ public class UserWrap implements SocketUser, Serializable {
     private ChannelHandlerContext socket = null;
     private Date lastHeartbeat = null;
     private String terminal;
+    private String ip;
     private int socketId;
     private boolean isBusy;
     private Object user = null;
@@ -36,6 +37,14 @@ public class UserWrap implements SocketUser, Serializable {
 
     public void setTerminal(String terminal) {
         this.terminal = terminal;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public String getIp() {
+        return ip;
     }
 
     public void setSocketId(int socketId) {
