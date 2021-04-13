@@ -78,6 +78,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             user.setUserDetail(new PlaceTerminalUserDetail(placeInfo.getPlaceID(), placeKey,placeInfo.getPlaceName()));
             user.setTerminal(TerminalType.PLACE_TERMINAL.getName());
             user.setBusy(false);
+            SendMessage sendMessage = new SendMessage(EventType.PLACE_LOGIN.getId(),user.getIp().getBytes("UTF-8"));
+            ctx.writeAndFlush(sendMessage);
         } else if (EventType.PLACE_HEARTBEAT.getId() == receiveMessage.getMsgType()) {
             user.setLastHeartbeat(new Date());
         } else if (EventType.PLACE_DATA.getId() == receiveMessage.getMsgType()) {
