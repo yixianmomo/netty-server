@@ -39,7 +39,7 @@
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
-            <version>3.5.2</version>
+            <version>3.5.6</version>
         </dependency>
         <!-- 本地包先把jar添加到本地仓库再引用 -->
         <dependency>
